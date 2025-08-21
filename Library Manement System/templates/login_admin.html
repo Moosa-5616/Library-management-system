@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2><i class="fas fa-user-shield"></i> Admin Login</h2>
+        
+        <form method="POST" action="{{ url_for('authenticate') }}">
+            <input type="hidden" name="user_type" value="admin">
+            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required 
+                       placeholder="Enter your phone number">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Enter your password">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+
+        <div class="mt-4 p-3" style="background-color: var(--bg-card); border-radius: 4px; border-left: 4px solid var(--accent-primary);">
+            <h6 style="color: var(--accent-primary); margin-bottom: 0.5rem;">
+                <i class="fas fa-info-circle"></i> Test Credentials
+            </h6>
+            <small style="color: var(--text-secondary);">
+                Phone: 7382950164 | Password: Admin 0011
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>document.body.classList.add('login-page');</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+Create a complete Flask web application for a **Library Management System** with the following features:
+
+PROJECT REQUIREMENTS
+--------------------
+- **Backend**: Python (Flask)
+- **Frontend**: HTML, CSS, JS (with Jinja2 templating from Flask)
+- **Database**: SQLite (store users, books, issued books, fines, etc.)
+- **Folder structure**:
+    /static/css    → styles.css
+    /static/images → school logo file (logo.png)
+    /templates     → HTML templates
+    main.py        → Flask app
+
+---
+
+USER TYPES & LOGIN SYSTEM
+-------------------------
+There will be 3 types of users: **Student**, **Employee**, and **Admin**.
+
+1. **Student Login**  
+   Required fields:
+     - Admission Number
+     - Class
+     - Section
+     - Roll Number  
+   Dashboard shows:
+     - Books issued (title, author, code, date issued)
+     - Books returned
+     - Fine amount (₹2/day after 7 days overdue)
+     - Available books in library
+
+2. **Employee Login**  
+   Required fields:
+     - Name
+     - Department Name
+     - Subject Taught  
+   Dashboard shows:
+     - Books issued
+     - Books returned
+     - Available books in library
+
+3. **Admin Login**  
+   Required fields:
+     - Phone Number
+     - Account Password  
+   Dashboard features:
+     - View all books taken by students or employees
+     - View returned books
+     - Add new books to library
+     - Remove books from library
+     - Mark when books are taken or returned
+     - Fine calculation for overdue books (₹2/day after 7 days)
+
+---
+
+TEST USERS
+----------
+**Admin**
+- Phone: 7382950164
+- Password: Admin 0011
+
+**Student**
+- Name: Alexander
+- Class: 8th
+- Section: Green
+- Admission Number: 7395
+- Roll Number: 19
+- Issued books: last 3 books from the provided list
+- Returned books: first 2 books from the provided list
+- One book overdue by 6 days → Fine ₹12
+
+**Employee**
+- Name: Mehraj ud din mir
+- Department: ICT
+- Subject: Computer
+- Issued books: first 3 books from the provided list
+- Returned books: last 3 books from the provided list
+
+---
+
+BOOK LIST (populate database at startup)
+----------------------------------------
+[Paste the full 50-book list from earlier here — No., Title, Category, Author, Code]
+
+---
+
+DESIGN REQUIREMENTS
+-------------------
+- Modern, professional, **dark theme** UI
+- Header with "Green Valley Educational Institute – Library Management System" and the school logo (logo.png in static/images)
+- Navigation bar on dashboards
+- Responsive layout for mobile
+- Search bar to find books by title, author, or code
+- Logout button for all dashboards
+
+---
+
+FUNCTIONAL NOTES
+----------------
+- Use Flask routes for login, dashboard pages, book management, and logout
+- Use SQLite to store all data
+- Separate HTML templates for:
+    - index.html (landing + login choice)
+    - login_student.html
+    - login_employee.html
+    - login_admin.html
+    - dashboard_student.html
+    - dashboard_employee.html
+    - dashboard_admin.html
+- Fine calculation should be done dynamically in the backend
+- Invalid login attempts show error messages
+- Preload test data for books and sample issued/returned records
+
+Deliver the complete project so I can run it on Replit with `python main.py` and view it in the web preview.

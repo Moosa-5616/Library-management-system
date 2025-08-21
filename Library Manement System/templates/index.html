@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Library Photo Section -->
+    <div class="library-showcase">
+        <img src="{{ url_for('static', filename='images/library.jpg') }}" alt="GVEI Library" class="library-photo">
+        <div class="library-overlay">
+            <h2><i class="fas fa-book"></i> Welcome to the Library</h2>
+            <p>Access your library account and manage your books with ease</p>
+        </div>
+    </div>
+    
+    <div class="text-center mb-4">
+        <h1><i class="fas fa-books"></i> Library Management System</h1>
+        <p class="lead">Welcome to Green Valley Educational Institute Library</p>
+    </div>
+    
+    <div class="welcome-section">
+        
+        <div class="login-options">
+            <a href="{{ url_for('login_page', user_type='student') }}" class="login-card">
+                <i class="fas fa-user-graduate"></i>
+                <h3>Student Login</h3>
+                <p>Access your borrowed books, check due dates, and view fines</p>
+            </a>
+            
+            <a href="{{ url_for('login_page', user_type='employee') }}" class="login-card">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h3>Employee Login</h3>
+                <p>View your library account and borrowed materials</p>
+            </a>
+            
+            <a href="{{ url_for('login_page', user_type='admin') }}" class="login-card">
+                <i class="fas fa-user-shield"></i>
+                <h3>Admin Login</h3>
+                <p>Manage library inventory, user accounts, and transactions</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- School Photo Section -->
+    <div class="school-showcase">
+        <div class="school-content">
+            <div class="school-text">
+                <h3><i class="fas fa-graduation-cap"></i> Green Valley Educational Institute</h3>
+                <p>Empowering minds through knowledge and learning. Our state-of-the-art library serves as the heart of academic excellence, providing students and faculty with access to a vast collection of resources.</p>
+                <div class="feature-list">
+                    <div class="feature">
+                        <i class="fas fa-book-open"></i>
+                        <span>50+ Books Available</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-clock"></i>
+                        <span>24/7 Online Access</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-users"></i>
+                        <span>Student & Faculty Access</span>
+                    </div>
+                </div>
+            </div>
+            <div class="school-image">
+                <img src="{{ url_for('static', filename='images/school.jpeg') }}" alt="Green Valley Educational Institute" class="school-photo">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Landing page only footer -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-social">
+            <h4>Connect with us</h4>
+            <div class="social-links">
+                <a class="social-link instagram" href="https://www.instagram.com/gveiofficial/" target="_blank" rel="noopener">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
+                </a>
+                <a class="social-link youtube" href="https://www.youtube.com/@gvei" target="_blank" rel="noopener">
+                    <i class="fab fa-youtube"></i>
+                    <span>YouTube</span>
+                </a>
+                <a class="social-link linkedin" href="https://www.linkedin.com/school/gvei/posts/?feedView=all" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin"></i>
+                    <span>LinkedIn</span>
+                </a>
+                <a class="social-link website" href="https://www.gveisrinagar.com/" target="_blank" rel="noopener">
+                    <i class="fas fa-globe"></i>
+                    <span>Official Website</span>
+                </a>
+                <a class="social-link facebook" href="https://www.facebook.com/GVEIANS" target="_blank" rel="noopener">
+                    <i class="fab fa-facebook"></i>
+                    <span>Facebook</span>
+                </a>
+                <a class="social-link x" href="https://x.com/gvei_srinagar?t=UJ5moOjE0VpN9J2A0GJ2cA&s=09" target="_blank" rel="noopener" aria-label="Follow us on X">
+                    <span class="icon-x" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="currentColor" role="img" focusable="false">
+                            <path d="M18.244 2H21.5l-7.363 8.405L22.5 22h-6.905l-5.4-6.548L3.9 22H.64l7.89-9.004L.5 2H7.54l4.93 5.936L18.244 2zm-2.417 18h2.02L8.28 4h-2.04l9.587 16z"></path>
+                        </svg>
+                    </span>
+                    <span>X</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="contact-cards">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-body">
+                    <h5>Mail Us</h5>
+                    <a href="#" class="contact-link copyable" data-type="email" data-copy="info@gveisrinagar.com">info@gveisrinagar.com</a>
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-location-dot"></i>
+                </div>
+                <div class="contact-body">
+                    <h5>Visit Us</h5>
+                    <p class="contact-text">Ellahibagh, Buchpora, Srinagar-190006, Jammu & Kashmir.</p>
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="contact-body">
+                    <h5>Call Us</h5>
+                    <a href="#" class="contact-link copyable" data-type="phone" data-copy="+91 194 2402606">+91 194 2402606</a>
+                    <a href="#" class="contact-link copyable" data-type="phone" data-copy="+91 194 2402071">+91 194 2402071</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Green Valley Educational Institute. All rights reserved.</p>
+            <p class="footer-credit">Made by students of AI Skill Club</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}

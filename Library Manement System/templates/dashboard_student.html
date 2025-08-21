@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <h1><i class="fas fa-tachometer-alt"></i> Student Dashboard</h1>
+        <div class="user-info">
+            <strong>Welcome, {{ session.user_name }}!</strong>
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <h3>{{ issued_books|length }}</h3>
+            <p><i class="fas fa-book-reader"></i> Books Issued</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ returned_books|length }}</h3>
+            <p><i class="fas fa-undo"></i> Books Returned</p>
+        </div>
+        <div class="stat-card {% if total_fine > 0 %}overdue{% endif %}">
+            <h3>₹{{ total_fine }}</h3>
+            <p><i class="fas fa-rupee-sign"></i> Total Fine</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ available_books|length }}</h3>
+            <p><i class="fas fa-book"></i> Available Books</p>
+        </div>
+    </div>
+
+    {% if search_results %}
+    <!-- Search Results -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3><i class="fas fa-search"></i> Search Results for "{{ search_query }}"</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Code</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in search_results %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.category }}</td>
+                        <td>{{ book.code }}</td>
+                        <td>
+                            {% if book.available %}
+                                <span class="badge bg-success">Available</span>
+                            {% else %}
+                                <span class="badge bg-danger">Issued</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% elif search_no_results %}
+    <div class="no-data">
+        <i class="fas fa-search"></i>
+        <p>This book never existed in library</p>
+    </div>
+    {% endif %}
+
+    <!-- Currently Issued Books -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3><i class="fas fa-book-reader"></i> Currently Issued Books</h3>
+        </div>
+        {% if issued_books %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Code</th>
+                        <th>Issue Date</th>
+                        <th>Days</th>
+                        <th>Fine</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in issued_books %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.code }}</td>
+                        <td>{{ book.issue_date }}</td>
+                        <td class="days-cell" data-issue-date="{{ book.issue_date }}">
+                            Loading...
+                        </td>
+                        <td>
+                            {% set fine = calculate_fine(book.issue_date) %}
+                            {% if fine > 0 %}
+                                <span class="fine-amount">₹{{ fine }}</span>
+                            {% else %}
+                                <span class="text-success">No Fine</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-book"></i>
+            <p>No books currently issued</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Returned Books -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3><i class="fas fa-history"></i> Previously Returned Books</h3>
+        </div>
+        {% if returned_books %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Code</th>
+                        <th>Issue Date</th>
+                        <th>Return Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in returned_books %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.code }}</td>
+                        <td>{{ book.issue_date }}</td>
+                        <td>{{ book.return_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-history"></i>
+            <p>No books returned yet</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Available Books -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3><i class="fas fa-book"></i> Available Books in Library</h3>
+        </div>
+        {% if available_books %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in available_books[:10] %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.category }}</td>
+                        <td>{{ book.code }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if available_books|length > 10 %}
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            <em>... and {{ available_books|length - 10 }} more books. Use search to find specific books.</em>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>No books currently available</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update days count for issued books
+    const daysCells = document.querySelectorAll('.days-cell');
+    
+    daysCells.forEach(cell => {
+        const issueDateStr = cell.getAttribute('data-issue-date');
+        if (issueDateStr) {
+            try {
+                const issueDate = new Date(issueDateStr);
+                const today = new Date();
+                const diffTime = Math.abs(today - issueDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                cell.textContent = diffDays + ' days';
+                
+                // Add overdue styling if more than 7 days
+                if (diffDays > 7) {
+                    cell.classList.add('overdue');
+                }
+            } catch (e) {
+                console.error('Error parsing date:', issueDateStr);
+                cell.textContent = 'N/A';
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

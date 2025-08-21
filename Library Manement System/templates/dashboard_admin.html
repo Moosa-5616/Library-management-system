@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+        <div class="user-info">
+            <strong>Welcome, Administrator!</strong>
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <h3>{{ issued_books|length }}</h3>
+            <p><i class="fas fa-book-reader"></i> Books Issued</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ returned_books|length }}</h3>
+            <p><i class="fas fa-undo"></i> Books Returned</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ all_books|length }}</h3>
+            <p><i class="fas fa-book"></i> Total Books</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ all_users|length }}</h3>
+            <p><i class="fas fa-users"></i> Active Users</p>
+        </div>
+    </div>
+
+    <!-- Add Book Form -->
+    <div class="admin-form" id="add-book-form" style="display: none;">
+        <h4><i class="fas fa-plus"></i> Add New Book</h4>
+        <form method="POST" action="{{ url_for('add_book') }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="title">Book Title</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="author">Author</label>
+                    <input type="text" id="author" name="author" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" required>
+                </div>
+                <div class="form-group">
+                    <label for="code">Book Code</label>
+                    <input type="text" id="code" name="code" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Book
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Issue Book Form -->
+    <div class="admin-form">
+        <h4><i class="fas fa-hand-paper"></i> Issue Book to User</h4>
+        <form method="POST" action="{{ url_for('issue_book') }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="book_id">Select Book</label>
+                    <select id="book_id" name="book_id" class="form-control" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 0.75rem;" required>
+                        <option value="">Choose a book...</option>
+                        {% for book in all_books %}
+                            {% if book.available %}
+                            <option value="{{ book.id }}">{{ book.title }} ({{ book.code }})</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="user_id">Select User</label>
+                    <select id="user_id" name="user_id" class="form-control" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 0.75rem;" required>
+                        <option value="">Choose a user...</option>
+                        {% for user in all_users %}
+                        <option value="{{ user.id }}">
+                            {% if user.user_type == 'student' %}
+                                {{ user.name or user.admission_number }} (Student)
+                            {% else %}
+                                {{ user.name }} ({{ user.department }})
+                            {% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-hand-paper"></i> Issue Book
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Register Student -->
+    <div class="admin-form">
+        <h4><i class="fas fa-user-plus"></i> Register Student</h4>
+        <form method="POST" action="{{ url_for('admin_register_student') }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="admission_number">Admission Number</label>
+                    <input type="text" id="admission_number" name="admission_number" required>
+                </div>
+                <div class="form-group">
+                    <label for="student_password">Password</label>
+                    <input type="password" id="student_password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Add Student
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Register Employee -->
+    <div class="admin-form">
+        <h4><i class="fas fa-user-tie"></i> Register Employee</h4>
+        <form method="POST" action="{{ url_for('admin_register_employee') }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="employee_name">Name</label>
+                    <input type="text" id="employee_name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" name="department" required>
+                </div>
+                <div class="form-group">
+                    <label for="employee_password">Password</label>
+                    <input type="password" id="employee_password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-tie"></i> Add Employee
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if search_results %}
+    <!-- Search Results -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3><i class="fas fa-search"></i> Search Results for "{{ search_query }}"</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Code</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in search_results %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.category }}</td>
+                        <td>{{ book.code }}</td>
+                        <td>
+                            {% if book.available %}
+                                <span class="badge bg-success">Available</span>
+                            {% else %}
+                                <span class="badge bg-danger">Issued</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if book.available %}
+                            <a href="{{ url_for('remove_book', book_id=book.id) }}" 
+                               class="btn btn-danger btn-small"
+                               onclick="return confirm('Are you sure you want to remove this book?')">
+                                <i class="fas fa-trash"></i> Remove
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% elif search_no_results %}
+    <div class="no-data">
+        <i class="fas fa-search"></i>
+        <p>This book never existed in library</p>
+    </div>
+    {% endif %}
+
+    <!-- Currently Issued Books -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3><i class="fas fa-book-reader"></i> Currently Issued Books</h3>
+        </div>
+        {% if issued_books %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Author</th>
+                        <th>Code</th>
+                        <th>Issued To</th>
+                        <th>User Type</th>
+                        <th>Issue Date</th>
+                        <th>Days</th>
+                        <th>Fine</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in issued_books %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.code }}</td>
+                        <td>{{ book.name }}</td>
+                        <td>
+                            <span class="badge {% if book.user_type == 'student' %}bg-primary{% else %}bg-info{% endif %}">
+                                {{ book.user_type|title }}
+                            </span>
+                        </td>
+                        <td>{{ book.issue_date }}</td>
+                        <td class="days-cell">{{ book.issue_date }}</td>
+                        <td>
+                            {% set fine = calculate_fine(book.issue_date) %}
+                            {% if fine > 0 %}
+                                <span class="fine-amount">₹{{ fine }}</span>
+                            {% else %}
+                                <span class="text-success">No Fine</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('return_book', transaction_id=book.transaction_id) }}" 
+                               class="btn btn-success btn-small">
+                                <i class="fas fa-undo"></i> Return
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-book"></i>
+            <p>No books currently issued</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Returned Books -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3><i class="fas fa-history"></i> Recently Returned Books</h3>
+        </div>
+        {% if returned_books %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Author</th>
+                        <th>Code</th>
+                        <th>Returned By</th>
+                        <th>User Type</th>
+                        <th>Issue Date</th>
+                        <th>Return Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in returned_books[:10] %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.code }}</td>
+                        <td>{{ book.name }}</td>
+                        <td>
+                            <span class="badge {% if book.user_type == 'student' %}bg-primary{% else %}bg-info{% endif %}">
+                                {{ book.user_type|title }}
+                            </span>
+                        </td>
+                        <td>{{ book.issue_date }}</td>
+                        <td>{{ book.return_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-history"></i>
+            <p>No books returned yet</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- All Books Management -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3><i class="fas fa-books"></i> All Books in Library</h3>
+        </div>
+        {% if all_books %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Code</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in all_books[:15] %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.category }}</td>
+                        <td>{{ book.code }}</td>
+                        <td>
+                            {% if book.available %}
+                                <span class="badge bg-success">Available</span>
+                            {% else %}
+                                <span class="badge bg-danger">Issued</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if book.available %}
+                            <a href="{{ url_for('remove_book', book_id=book.id) }}" 
+                               class="btn btn-danger btn-small"
+                               onclick="return confirm('Are you sure you want to remove this book?')">
+                                <i class="fas fa-trash"></i> Remove
+                            </a>
+                            {% else %}
+                            <span class="text-muted">Currently Issued</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if all_books|length > 15 %}
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <em>... and {{ all_books|length - 15 }} more books. Use search to find specific books.</em>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>No books in the library</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update days count for issued books
+    const daysCells = document.querySelectorAll('.days-cell');
+    
+    daysCells.forEach(cell => {
+        const issueDateStr = cell.textContent.trim();
+        if (issueDateStr) {
+            try {
+                const issueDate = new Date(issueDateStr);
+                const today = new Date();
+                const diffTime = Math.abs(today - issueDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                cell.textContent = diffDays + ' days';
+                
+                // Add overdue styling if more than 7 days
+                if (diffDays > 7) {
+                    cell.classList.add('overdue');
+                }
+            } catch (e) {
+                console.error('Error parsing date:', issueDateStr);
+            }
+        }
+    });
+
+    // Show add book form by default for better UX
+    const addBookForm = document.getElementById('add-book-form');
+    if (addBookForm) {
+        addBookForm.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}
